@@ -1,20 +1,29 @@
-import { useState, useEffect } from "react";
 import Shape from "./components/Shape";
-import WhiteBoard from "./components/WhiteBoard";
 import SelectOptions from "./components/SelectOptions";
-// import "./App.css";
+import Canvas from "./components/Canvas";
+import { isOpenEditorAtom, shapesAtom } from "./atoms";
+import { useAtomValue } from "jotai";
+import { useShapeEditing } from "./hooks";
+import ShapeEditor from "./components/ShapeEditor";
+import { ShapeModel } from "./types/ShapeModel";
 
-function App() {
-  const [count, setCount] = useState(0);
+const App: React.FC = () => {
+  const shapes = useAtomValue(shapesAtom);
+  const isOpenEditor = useAtomValue(isOpenEditorAtom);
+
+  useShapeEditing();
 
   return (
     <>
       <SelectOptions />
-      <WhiteBoard>
-        <Shape />
-      </WhiteBoard>
+      {isOpenEditor ? <ShapeEditor /> : null}
+      <Canvas>
+        {shapes.map((shape: ShapeModel, index: number) => (
+          <Shape {...shape} index={index} key={shape.id} />
+        ))}
+      </Canvas>
     </>
   );
-}
+};
 
 export default App;

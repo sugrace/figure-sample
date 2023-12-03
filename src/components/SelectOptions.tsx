@@ -1,10 +1,13 @@
 import { useSetAtom } from "jotai";
-import { shapesAtom, shapeTypeAtom } from "@atoms";
+import { shapeTypeAtom, useCommitAtom } from "@atoms";
 
-function SelectOptions() {
-  const setShapes = useSetAtom(shapesAtom);
+const SelectOptions: React.FC = () => {
   const setShapeType = useSetAtom(shapeTypeAtom);
+  const { commitShapes } = useCommitAtom();
 
+  const clearAllShapes = () => {
+    commitShapes([]);
+  };
   return (
     <div>
       <button
@@ -21,15 +24,9 @@ function SelectOptions() {
       >
         Circle
       </button>
-      <button
-        onClick={() => {
-          setShapes([]);
-        }}
-      >
-        Clear
-      </button>
+      <button onClick={clearAllShapes}>Clear</button>
     </div>
   );
-}
+};
 
 export default SelectOptions;

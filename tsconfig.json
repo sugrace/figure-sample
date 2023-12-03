@@ -22,7 +22,10 @@
     /* Paths (alias) */
     "baseUrl": ".",
     "paths": {
-      "@atoms": ["src/atoms"]
+      "@/*": ["src/*"],
+      "@atoms": ["src/atoms"],
+      "@components/*": ["src/components/*"],
+      "@constants/*": ["src/constants/*"]
     }
   },
   "include": ["src"],
