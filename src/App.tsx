@@ -10,7 +10,6 @@ import { ShapeModel } from "./types/ShapeModel";
 const App: React.FC = () => {
   const shapes = useAtomValue(shapesAtom);
   const isOpenEditor = useAtomValue(isOpenEditorAtom);
-
   useShapeEditing();
 
   return (
@@ -18,8 +17,8 @@ const App: React.FC = () => {
       <SelectOptions />
       {isOpenEditor ? <ShapeEditor /> : null}
       <Canvas>
-        {shapes.map((shape: ShapeModel, index: number) => (
-          <Shape {...shape} index={index} key={shape.id} />
+        {shapes.map((shape: ShapeModel) => (
+          <Shape {...shape} key={shape.id} />
         ))}
       </Canvas>
     </>

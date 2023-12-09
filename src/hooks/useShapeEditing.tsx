@@ -18,22 +18,37 @@ const useShapeEditing = () => {
   );
 
   const setIsOpenEditor = useSetAtom(isOpenEditorAtom);
-
   const { commitShapes } = useCommitAtom();
 
   useEffect(() => {
-    const onDrag = (event: MouseEvent) => {
-      if (selectedShapeElement) {
-        const { left, top } = (
-          selectedShapeElement as HTMLElement
-        ).getBoundingClientRect();
+    if (!selectedShapeElement) return;
 
-        (selectedShapeElement as HTMLElement).style.left = `${
-          left + event.movementX
-        }px`;
-        (selectedShapeElement as HTMLElement).style.top = `${
-          top + event.movementY
-        }px`;
+    const onMouseMove = (event: MouseEvent) => {
+      if (shapeActionType === SHAPE_ACTION_TYPE.MOVING) {
+        const selectedElement = selectedShapeElement as HTMLElement;
+
+        const { width, height, right, bottom, left, top } =
+          selectedElement.getBoundingClientRect();
+
+        selectedElement.style.left = `${left + event.movementX}px`;
+        selectedElement.style.top = `${top + event.movementY}px`;
+
+        const updatedRect = {
+          width,
+          height,
+          right,
+          bottom,
+          left: left + event.movementX,
+          top: top + event.movementY,
+        };
+
+        setShapes((prevShapes: ShapeModel[]) =>
+          prevShapes.map((shape: ShapeModel) =>
+            shape.selected
+              ? { ...shape, ...updatedRect, selected: true }
+              : shape
+          )
+        );
       }
     };
 
@@ -42,18 +57,18 @@ const useShapeEditing = () => {
       setShapeActionType("none");
       setIsOpenEditor(true);
 
-      const { left, top } = (
-        selectedShapeElement as HTMLElement
-      ).getBoundingClientRect();
+      const selectedElement = selectedShapeElement as HTMLElement;
 
-      shapes.forEach((shape: ShapeModel) => {
-        if (shape.selected) {
-          shape.left = left;
-          shape.top = top;
-        }
-      });
+      const { width, height, left, top } =
+        selectedElement.getBoundingClientRect();
 
-      const updatedShapes: ShapeModel[] = [...shapes];
+      selectedElement.style.cursor = "grab";
+
+      const updatedShapes: ShapeModel[] = shapes.map((shape: ShapeModel) =>
+        shape.selected
+          ? { ...shape, left, top, width, height, selected: true }
+          : shape
+      );
 
       commitShapes(updatedShapes);
     };
@@ -62,21 +77,21 @@ const useShapeEditing = () => {
       shapeActionType !== SHAPE_ACTION_TYPE.DRAWING &&
       shapeActionType === SHAPE_ACTION_TYPE.MOVING
     ) {
-      document.addEventListener("mousemove", onDrag);
+      document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
     }
 
     return () => {
-      document.removeEventListener("mousemove", onDrag);
+      document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
     };
   }, [
-    shapeActionType,
     selectedShapeElement,
+    shapeActionType,
+    setShapes,
     setShapeActionType,
     setIsOpenEditor,
     shapes,
-    setShapes,
     commitShapes,
   ]);
 };

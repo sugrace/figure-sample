@@ -4,43 +4,58 @@ import {
   shapesAtom,
   selectedShapeElementAtom,
   isOpenEditorAtom,
+  useCommitAtom,
 } from "@atoms";
 import { useSetAtom, useAtomValue } from "jotai";
 import { ShapeModel } from "@/types/ShapeModel";
 import { SHAPE_ACTION_TYPE } from "@constants/shape";
+import ResizeHandler from "./ResizeHandler";
 
-interface IShapeProps extends ShapeModel {
-  index: number;
-}
+interface IPropsShape extends ShapeModel {}
 
-const Shape: React.FC<IShapeProps> = (props) => {
-  const { index, left, top, width, height, borderRadius, background, zIndex } =
-    props;
+const Shape: React.FC<IPropsShape> = ({
+  id,
+  left,
+  top,
+  width,
+  height,
+  selected,
+  borderRadius,
+  zIndex,
+}) => {
   const shapes = useAtomValue(shapesAtom);
 
   const setShapeActionType = useSetAtom(shapeActionTypeAtom);
   const setIsOpenEditor = useSetAtom(isOpenEditorAtom);
   const setSelectedShapeElement = useSetAtom(selectedShapeElementAtom);
 
+  const { commitShapes } = useCommitAtom();
+
   const shapeRef = useRef(null);
 
-  const onShapeMouseDown = (event: React.MouseEvent, index: number) => {
+  const doSelect = (id: string) => {
+    const updatedShapes: ShapeModel[] = shapes.map((shape: ShapeModel) => {
+      return {
+        ...shape,
+        selected: shape.id === id,
+      };
+    });
+    commitShapes(updatedShapes);
+  };
+
+  const onShapeMouseDown = (event: React.MouseEvent, id: string) => {
     event.stopPropagation();
 
-    shapes.forEach((shape: ShapeModel) => {
-      if (shape.selected) {
-        shape.background = "";
-        shape.selected = false;
-      }
-    });
-    shapes[index].background = "black";
-    shapes[index].selected = true;
-    if (shapeRef.current && typeof shapeRef.current !== "undefined") {
-      (shapeRef.current as HTMLElement).style.cursor = "grabbing";
-    }
     setShapeActionType(SHAPE_ACTION_TYPE.MOVING);
     setIsOpenEditor(false);
     setSelectedShapeElement(shapeRef.current);
+
+    if (shapeRef.current && typeof shapeRef.current !== "undefined") {
+      (shapeRef.current as HTMLElement).style.cursor = "grabbing";
+      (shapeRef.current as HTMLElement).style.background = "black";
+    }
+
+    doSelect(id);
   };
 
   return (
@@ -52,16 +67,19 @@ const Shape: React.FC<IShapeProps> = (props) => {
         top: top,
         width,
         height,
+        boxSizing: "border-box",
         border: "2px solid gray",
         borderRadius,
-        background,
+        background: selected ? "black" : "",
         cursor: "grab",
         zIndex,
       }}
       onMouseDown={(event: React.MouseEvent) => {
-        onShapeMouseDown(event, index);
+        onShapeMouseDown(event, id);
       }}
-    />
+    >
+      {selected ? <ResizeHandler /> : null}
+    </div>
   );
 };
 

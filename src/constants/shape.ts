@@ -8,6 +8,7 @@ const SHAPE_TYPE = {
 const SHAPE_ACTION_TYPE = {
   DRAWING: "drawing",
   MOVING: "moving",
+  RESIZING: "resizing",
 };
 
 const SHAPE_TYPE_MAP: ShapeStyleMap = {
