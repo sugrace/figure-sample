@@ -1,4 +1,4 @@
-import { ShapeStyleMap } from "@/types/ShapeModel";
+import { ShapeStyleMap } from "@/types/Shape";
 
 const SHAPE_TYPE = {
   BOX: "Box",
@@ -9,6 +9,8 @@ const SHAPE_ACTION_TYPE = {
   DRAWING: "drawing",
   MOVING: "moving",
   RESIZING: "resizing",
+  ROTATING: "rotating",
+  NONE: "none",
 };
 
 const SHAPE_TYPE_MAP: ShapeStyleMap = {

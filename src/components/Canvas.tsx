@@ -6,7 +6,7 @@ import {
 } from "@atoms";
 import { useAtom, useAtomValue } from "jotai";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ShapeModel } from "@/types/ShapeModel";
+import { ShapeModel } from "@/types/Shape";
 import { v4 as uuidv4 } from "uuid";
 import { SHAPE_ACTION_TYPE, SHAPE_TYPE_MAP } from "@constants/shape";
 
@@ -32,7 +32,7 @@ const Canvas: React.FC<{
 
   const onMouseUp: React.MouseEventHandler<HTMLDivElement> = () => {
     if (shapeActionType === SHAPE_ACTION_TYPE.DRAWING) {
-      setShapeActionType("none");
+      setShapeActionType(SHAPE_ACTION_TYPE.NONE);
 
       const newShape: ShapeModel = {
         id: uuidv4(),
@@ -44,6 +44,7 @@ const Canvas: React.FC<{
         borderRadius: SHAPE_TYPE_MAP[shapeType].borderRadius,
         background: "",
         element: null,
+        rotateAngle: 0,
         zIndex: 5000,
       };
 

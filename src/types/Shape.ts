@@ -18,6 +18,21 @@ interface ShapeModel {
   borderRadius: string | number;
   background: string;
   zIndex: number;
+  rotateAngle: number;
 }
 
-export type { ShapeStyleMap, ShapeModel };
+interface Delta {
+  deltaX: number;
+  deltaY: number;
+}
+
+interface Rect {
+  right: number;
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+  bottom: number;
+}
+
+export type { ShapeStyleMap, ShapeModel, Delta, Rect };

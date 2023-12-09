@@ -5,7 +5,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-
+    "allowSyntheticDefaultImports": true,
     /* Bundler mode */
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -24,6 +24,8 @@
     "paths": {
       "@/*": ["src/*"],
       "@atoms": ["src/atoms"],
+      "@utils": ["src/utils"],
+      "@hooks": ["src/hooks"],
       "@components/*": ["src/components/*"],
       "@constants/*": ["src/constants/*"]
     }

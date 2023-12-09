@@ -1,5 +1,5 @@
 import { SHAPE_TYPE } from "@constants/shape";
-import { ShapeModel } from "@/types/ShapeModel";
+import { ShapeModel } from "@/types/Shape";
 import { atom, useAtom } from "jotai";
 import { useMemo } from "react";
 

@@ -7,9 +7,10 @@ import {
   useCommitAtom,
 } from "@atoms";
 import { useSetAtom, useAtomValue } from "jotai";
-import { ShapeModel } from "@/types/ShapeModel";
+import { ShapeModel } from "@/types/Shape";
 import { SHAPE_ACTION_TYPE } from "@constants/shape";
-import ResizeHandler from "./ResizeHandler";
+import ResizeHandler from "@components/handler/ResizeHandler";
+import RotateHandler from "@components/handler/RotateHandler";
 
 interface IPropsShape extends ShapeModel {}
 
@@ -21,6 +22,7 @@ const Shape: React.FC<IPropsShape> = ({
   height,
   selected,
   borderRadius,
+  rotateAngle,
   zIndex,
 }) => {
   const shapes = useAtomValue(shapesAtom);
@@ -72,13 +74,15 @@ const Shape: React.FC<IPropsShape> = ({
         borderRadius,
         background: selected ? "black" : "",
         cursor: "grab",
+        transform: `rotate(${rotateAngle}deg)`,
         zIndex,
       }}
       onMouseDown={(event: React.MouseEvent) => {
         onShapeMouseDown(event, id);
       }}
     >
-      {selected ? <ResizeHandler /> : null}
+      {selected ? <ResizeHandler rotateAngle={rotateAngle} /> : null}
+      {selected ? <RotateHandler /> : null}
     </div>
   );
 };

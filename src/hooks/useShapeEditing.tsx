@@ -1,4 +1,4 @@
-import { ShapeModel } from "@/types/ShapeModel";
+import { ShapeModel } from "@/types/Shape";
 import {
   isOpenEditorAtom,
   selectedShapeElementAtom,
@@ -7,8 +7,17 @@ import {
   useCommitAtom,
 } from "@atoms";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { SHAPE_ACTION_TYPE } from "@constants/shape";
+import { getOriginRect } from "@utils";
+
+interface Rect {
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+  bottom: number;
+}
 
 const useShapeEditing = () => {
   const [shapes, setShapes] = useAtom(shapesAtom);
@@ -17,56 +26,59 @@ const useShapeEditing = () => {
     selectedShapeElementAtom
   );
 
+  const tempRect = useRef<Rect | null>(null);
+
   const setIsOpenEditor = useSetAtom(isOpenEditorAtom);
   const { commitShapes } = useCommitAtom();
 
   useEffect(() => {
     if (!selectedShapeElement) return;
+    const selectedElement = selectedShapeElement as HTMLElement;
+    const { left, top, width, height, bottom } = getOriginRect(selectedElement);
+    const rect = { left, top, width, height, bottom };
+
+    tempRect.current = rect;
 
     const onMouseMove = (event: MouseEvent) => {
+      if (!tempRect.current) return;
+
+      const newRect = {
+        newLeft: tempRect.current.left + event.movementX,
+        newTop: tempRect.current.top + event.movementY,
+      };
       if (shapeActionType === SHAPE_ACTION_TYPE.MOVING) {
-        const selectedElement = selectedShapeElement as HTMLElement;
-
-        const { width, height, right, bottom, left, top } =
-          selectedElement.getBoundingClientRect();
-
-        selectedElement.style.left = `${left + event.movementX}px`;
-        selectedElement.style.top = `${top + event.movementY}px`;
-
-        const updatedRect = {
-          width,
-          height,
-          right,
-          bottom,
-          left: left + event.movementX,
-          top: top + event.movementY,
-        };
-
-        setShapes((prevShapes: ShapeModel[]) =>
-          prevShapes.map((shape: ShapeModel) =>
-            shape.selected
-              ? { ...shape, ...updatedRect, selected: true }
-              : shape
-          )
-        );
+        selectedElement.style.left = `${newRect.newLeft}px`;
+        selectedElement.style.top = `${newRect.newTop}px`;
       }
+
+      tempRect.current = {
+        ...rect,
+        left: newRect.newLeft,
+        top: newRect.newTop,
+      };
     };
 
     const onMouseUp = () => {
       if (!selectedShapeElement) return;
-      setShapeActionType("none");
+      setShapeActionType(SHAPE_ACTION_TYPE.NONE);
       setIsOpenEditor(true);
 
       const selectedElement = selectedShapeElement as HTMLElement;
 
-      const { width, height, left, top } =
-        selectedElement.getBoundingClientRect();
+      const { left, top, width, height } = getOriginRect(selectedElement);
 
       selectedElement.style.cursor = "grab";
 
       const updatedShapes: ShapeModel[] = shapes.map((shape: ShapeModel) =>
         shape.selected
-          ? { ...shape, left, top, width, height, selected: true }
+          ? {
+              ...shape,
+              left,
+              top,
+              width,
+              height,
+              selected: true,
+            }
           : shape
       );
 
