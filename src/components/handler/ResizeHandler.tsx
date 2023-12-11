@@ -88,7 +88,6 @@ const ResizeHandler: React.FC<IPropsResizeHandler> = ({ rotateAngle }) => {
 
             degree = (180 - rotateAngle) / 2;
             radius = (Math.PI / 180) * degree;
-            console.warn({ degree, radius });
             baseLine = 2 * ((width / 2) * Math.cos(radius));
             newBaseLine = 2 * ((newRect.newWidth / 2) * Math.cos(radius));
             a = Math.cos(radius) * baseLine;
